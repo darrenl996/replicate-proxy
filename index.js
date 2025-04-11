@@ -4,9 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-app.use(express.json({ limit: "10mb" }));
 
-// ✅ CORS middleware — this is required
+// ✅ CORS FIX — MUST be first
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -17,9 +16,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// ✅ JSON parser after CORS
+app.use(express.json({ limit: "10mb" }));
+
 const MODEL_VERSION = "e70c94fdc3f6c4f7c377c6986a5eacba1db6e28b06ebdfb4d1e0520c1e0f1527";
 
-// POST endpoint
 app.post("/replicate", async (req, res) => {
   try {
     const { image } = req.body;
@@ -59,12 +60,13 @@ app.post("/replicate", async (req, res) => {
 
     res.json({ result });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error:", err);
     res.status(500).json({ error: "Failed to call Replicate." });
   }
 });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`🧠 Proxy listening on port ${port}`);
+  console.log(`🧠 Proxy server running on port ${port}`);
 });
+
