@@ -5,18 +5,19 @@ dotenv.config();
 
 const app = express();
 
-// ✅ CORS FIX — MUST be first
+// ✅ GLOBAL CORS MIDDLEWARE
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
   next();
 });
 
-// ✅ JSON parser after CORS
+// ✅ Handle preflight OPTIONS request for /replicate explicitly
+app.options("/replicate", (req, res) => {
+  res.sendStatus(200);
+});
+
 app.use(express.json({ limit: "10mb" }));
 
 const MODEL_VERSION = "e70c94fdc3f6c4f7c377c6986a5eacba1db6e28b06ebdfb4d1e0520c1e0f1527";
@@ -69,4 +70,5 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`🧠 Proxy server running on port ${port}`);
 });
+
 
