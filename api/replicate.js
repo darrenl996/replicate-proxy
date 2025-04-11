@@ -55,6 +55,7 @@ export default async function handler(req, res) {
     res.status(200).json({ result });
   } catch (err) {
     console.error("❌ Error calling Replicate:", err);
-    res.status(500).json({ error: "Failed to call Replicate API" });
+res.status(500).json({ error: err.message || "Failed to call Replicate API" });
+
   }
 }
