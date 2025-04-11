@@ -9,6 +9,7 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
+  // ✅ Working version of clip-interrogator
   const MODEL_VERSION = "c165d80c1b26f28b4cfa1fc9e59e1d09a6431a8dc4e3e5dbd0c30c3d3c0a5f06";
   const token = process.env.REPLICATE_API_TOKEN;
 
@@ -38,7 +39,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         version: MODEL_VERSION,
         input: {
-          image: image
+          image
         }
       })
     });
