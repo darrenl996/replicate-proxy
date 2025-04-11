@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 
 export default async function handler(req, res) {
-  // ✅ CORS
+  // ✅ CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -9,20 +9,24 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const MODEL_VERSION = "db21e45bcbebc3a3caa6741cd8f1954fae1514e6e44f5b942e6fa6f3aeb5d55d";
+  const MODEL_VERSION = "8151e1c94ff5b42b18aa3c2e8bfa73ac2a3162bcd9682264d42aee7c7f1522c2";
   const token = process.env.REPLICATE_API_TOKEN;
 
   if (!token) {
-    console.error("❌ Missing API token");
     return res.status(500).json({ error: "Missing Replicate API token" });
   }
 
   try {
     const { image } = req.body;
+
+    if (!image || !image.startsWith("data:image")) {
+      return res.status(400).json({ error: "Invalid image input" });
+    }
+
     console.log("📤 Sending to Replicate:", {
-      imagePreview: image?.slice(0, 100),
-      length: image?.length,
-      startsWith: image?.startsWith("data:image")
+      imagePreview: image.slice(0, 100),
+      length: image.length,
+      startsWith: image.startsWith("data:image")
     });
 
     const replicateRes = await fetch("https://api.replicate.com/v1/predictions", {
@@ -34,8 +38,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         version: MODEL_VERSION,
         input: {
-          image: image,
-          mode: "best"
+          image: image
         }
       })
     });
