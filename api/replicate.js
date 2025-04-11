@@ -45,6 +45,11 @@ export default async function handler(req, res) {
     const prediction = await replicateRes.json();
     console.log("📦 Raw Replicate Response:", prediction);
 
+    // ✅ Handle rate limit
+    if (prediction?.status === 429 || prediction?.detail?.includes("throttled")) {
+      return res.status(429).json({ error: "Throttled by Replicate. Please wait and retry." });
+    }
+
     if (!prediction?.urls?.get) {
       throw new Error("Replicate response missing status URL");
     }
