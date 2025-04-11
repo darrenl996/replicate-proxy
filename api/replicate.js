@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const MODEL_VERSION = "91fa40a75373ec86b13fa7b8753d79c3f3c826f0f47368bb1393bc9f0c6fa79c";
+  const MODEL_VERSION = "0c6c1f42cb26e4c4f7e60b240f30b84414a28cce7599f41d5c9ab8f73edc0ff8";
   const token = process.env.REPLICATE_API_TOKEN;
 
   if (!token) {
