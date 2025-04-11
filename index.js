@@ -6,6 +6,14 @@ dotenv.config();
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
+// ✅ CORS Fix — allow requests from any site
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*"); // Allow any origin
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Methods", "POST");
+  next();
+});
+
 const MODEL_VERSION = "e70c94fdc3f6c4f7c377c6986a5eacba1db6e28b06ebdfb4d1e0520c1e0f1527";
 
 app.post("/replicate", async (req, res) => {
