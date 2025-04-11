@@ -25,6 +25,11 @@ export default async function handler(req, res) {
     const { image } = req.body;
 
     const MODEL_VERSION = "e70c94fdc3f6c4f7c377c6986a5eacba1db6e28b06ebdfb4d1e0520c1e0f1527";
+console.log("📤 Sending to Replicate:", {
+  imagePreview: image?.slice(0, 100),
+  length: image?.length,
+  startsWith: image?.startsWith("data:image")
+});
 
     const replicateRes = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
