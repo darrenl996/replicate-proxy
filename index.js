@@ -6,16 +6,20 @@ dotenv.config();
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
-// ✅ CORS Fix — allow requests from any site
+// ✅ CORS middleware — this is required
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*"); // Allow any origin
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Access-Control-Allow-Methods", "POST");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
 
 const MODEL_VERSION = "e70c94fdc3f6c4f7c377c6986a5eacba1db6e28b06ebdfb4d1e0520c1e0f1527";
 
+// POST endpoint
 app.post("/replicate", async (req, res) => {
   try {
     const { image } = req.body;
@@ -38,7 +42,6 @@ app.post("/replicate", async (req, res) => {
     const prediction = await predictionRes.json();
     const statusUrl = prediction.urls.get;
 
-    // Poll until done
     let result = null;
     while (!result) {
       const checkRes = await fetch(statusUrl, {
