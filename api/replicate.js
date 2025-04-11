@@ -35,6 +35,7 @@ export default async function handler(req, res) {
     });
 
     const prediction = await replicateRes.json();
+    console.log("📦 Prediction API Response:", prediction);
     const statusUrl = prediction.urls.get;
 
     let result = null;
@@ -45,6 +46,7 @@ export default async function handler(req, res) {
         }
       });
       const status = await checkRes.json();
+      console.log("🔁 Polling status:", status.status);
       if (status.status === "succeeded") {
         result = status.output;
         break;
@@ -53,9 +55,11 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({ result });
-  } catch (err) {
-    console.error("❌ Error calling Replicate:", err);
-res.status(500).json({ error: err.message || "Failed to call Replicate API" });
+} catch (err) {
+  console.error("❌ Replicate API Error:", err);
+  res.status(500).json({ error: err.message || "Failed to call Replicate API" });
+}
+
 
   }
 }
