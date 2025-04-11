@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 
 export default async function handler(req, res) {
-  // ✅ CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -9,8 +8,7 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  // ✅ Working version of clip-interrogator
-  const MODEL_VERSION = "c165d80c1b26f28b4cfa1fc9e59e1d09a6431a8dc4e3e5dbd0c30c3d3c0a5f06";
+  const MODEL_VERSION = "91fa40a75373ec86b13fa7b8753d79c3f3c826f0f47368bb1393bc9f0c6fa79c";
   const token = process.env.REPLICATE_API_TOKEN;
 
   if (!token) {
@@ -26,8 +24,7 @@ export default async function handler(req, res) {
 
     console.log("📤 Sending to Replicate:", {
       imagePreview: image.slice(0, 100),
-      length: image.length,
-      startsWith: image.startsWith("data:image")
+      length: image.length
     });
 
     const replicateRes = await fetch("https://api.replicate.com/v1/predictions", {
@@ -39,7 +36,8 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         version: MODEL_VERSION,
         input: {
-          image
+          image,
+          mode: "best"
         }
       })
     });
